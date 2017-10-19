@@ -28,13 +28,10 @@ namespace UserManager.Implementation
 
         public RegisterResult Register(string login, string password, string passwordConfirmation)
         {
-            if (string.IsNullOrWhiteSpace(login) || string.IsNullOrWhiteSpace(password) || string.IsNullOrWhiteSpace(passwordConfirmation))
+            var validateInputResult = ValidateInput(login, password, passwordConfirmation);
+            if (!validateInputResult.IsSuccess)
             {
-                return new RegisterResult(false, new List<string>() { "No value can be empty" });
-            }
-            if (password != passwordConfirmation)
-            {
-                return new RegisterResult(false, new List<string>() { "Passwords does not match" });
+                return new RegisterResult(validateInputResult.IsSuccess, validateInputResult.Errors);
             }
 
             var validateResult = ValidateUser(login);
@@ -42,9 +39,7 @@ namespace UserManager.Implementation
             {
                 return new RegisterResult(validateResult.IsSuccess, validateResult.Errors);
             }
-
-            var hashedPassword = CryptoHelper.HashPassword(password);
-
+            
             var con = new SqlConnection();
             con.ConnectionString = _connectionString;
             con.Open();
@@ -52,6 +47,7 @@ namespace UserManager.Implementation
             {
                 using (SqlCommand cmd = new SqlCommand(_registerCommand, con))
                 {
+                    var hashedPassword = CryptoHelper.HashPassword(password);
                     cmd.Parameters.AddWithValue("@Login", login);
                     cmd.Parameters.AddWithValue("@SaltedPassword", hashedPassword);
                     var result = cmd.ExecuteNonQuery();
@@ -73,6 +69,19 @@ namespace UserManager.Implementation
 
         }
 
+        private ValidateResult ValidateInput(string login, string password, string passwordConfirmation)
+        {
+            if (string.IsNullOrWhiteSpace(login) || string.IsNullOrWhiteSpace(password) || string.IsNullOrWhiteSpace(passwordConfirmation))
+            {
+                return new ValidateResult(false, new List<string>() { "No value can be empty" });
+            }
+            if (password != passwordConfirmation)
+            {
+                return new ValidateResult(false, new List<string>() { "Passwords does not match" });
+            }
+            return new ValidateResult(true);
+        }
+
         private ValidateResult ValidateUser(string login)
         {
             var con = new SqlConnection();
@@ -92,7 +101,7 @@ namespace UserManager.Implementation
                         {
                             return new ValidateResult(false, new List<string>() { $"User {login} exists" });
                         }
-                    }                   
+                    }
                 }
                 return new ValidateResult(true);
             }

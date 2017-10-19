@@ -1,11 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Data;
 using System.Data.SqlClient;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using UserManager.ActionResults;
 using UserManager.Contract;
+using UserManager.Helpers;
 
 namespace UserManager.Implementation
 {
@@ -25,9 +27,63 @@ namespace UserManager.Implementation
             }
             //sprawdz czy jest taki juser
             ValidateUserResult userResult = CheckIfUserExists(login);
-
+            if (!userResult.IsSuccess || string.IsNullOrWhiteSpace(userResult.HashedPasswordFromDb))
+            {
+                return new LoginResult(userResult.IsSuccess, userResult.Errors);
+            }
             //sprawdz czy hash hasla sie zgadza
+
+            bool isPasswordOk = CheckPasswords(password, userResult.HashedPasswordFromDb);
+            if (!isPasswordOk)
+            {
+                return new LoginResult(false, new List<string> { "Login or password incorrect" });
+            }
+
+            return LogInUser(login);
+
             //jak sie zgadza wszystko to zwróc token i jego expiration date, zapisz go też w bazie
+        }
+
+        private LoginResult LogInUser(string login)
+        {
+
+            //todo repair method
+            var con = new SqlConnection();
+            con.ConnectionString = _connectionString;
+            con.Open();
+            //todo switch to script from file
+            var getUserByLoginCommand = @"select * from [dbo].[Users] where Login = @Login";
+            try
+            {
+                using (SqlCommand cmd = new SqlCommand(getUserByLoginCommand, con))
+                {
+                    cmd.Parameters.AddWithValue("@Login", login);
+                    SqlDataReader reader = cmd.ExecuteReader();
+                    while (reader.Read())
+                    {
+                        string hasedPassword = reader["SaltedPassword"]?.ToString();
+                        return new LoginResult(true, hasedPassword);
+                    }
+                }
+                return new LoginResult(true, new List<string>() { "User does not exists" });
+            }
+            catch (Exception e)
+            {
+                var messages = e.FlatternMessages();
+                return new LoginResult(false, messages);
+            }
+            finally
+            {
+                if (con.State == ConnectionState.Open)
+                {
+                    con.Close();
+                }
+            }
+        }
+
+        private bool CheckPasswords(string password, string hashedPasswordFromDb)
+        {
+            return CryptoHelper.ComparePasswords(password, hashedPasswordFromDb);
         }
 
         private ValidateUserResult CheckIfUserExists(string login)
@@ -35,21 +91,26 @@ namespace UserManager.Implementation
             var con = new SqlConnection();
             con.ConnectionString = _connectionString;
             con.Open();
-            var getUserByLoginCommand = @"select * from [dbo].[Users] where "
+            //todo switch to script from file
+            var getUserByLoginCommand = @"select * from [dbo].[Users] where Login = @Login";
             try
             {
-                using (SqlCommand cmd = new SqlCommand(_registerCommand, con))
+                using (SqlCommand cmd = new SqlCommand(getUserByLoginCommand, con))
                 {
                     cmd.Parameters.AddWithValue("@Login", login);
-                    cmd.Parameters.AddWithValue("@SaltedPassword", hashedPassword);
-                    var result = cmd.ExecuteNonQuery();
+                    SqlDataReader reader = cmd.ExecuteReader();
+                    while (reader.Read())
+                    {
+                        string hasedPassword = reader["SaltedPassword"]?.ToString();
+                        return new ValidateUserResult(true, hasedPassword);
+                    }
                 }
-                return new RegisterResult(true);
+                return new ValidateUserResult(new List<string>() { "User does not exists" });
             }
             catch (Exception e)
             {
                 var messages = e.FlatternMessages();
-                return new RegisterResult(false, messages);
+                return new ValidateUserResult(messages);
             }
             finally
             {
@@ -65,6 +126,9 @@ namespace UserManager.Implementation
             public ValidateUserResult(bool isSucess, string hashedPasswordFromDb, IEnumerable<string> errors = null) : base(isSucess, errors)
             {
                 HashedPasswordFromDb = hashedPasswordFromDb;
+            }
+            public ValidateUserResult(IEnumerable<string> errors, bool isSucess = false) : base(isSucess, errors)
+            {
             }
 
             public string HashedPasswordFromDb { get; }

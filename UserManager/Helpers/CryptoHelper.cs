@@ -33,5 +33,24 @@ namespace UserManager.Helpers
             var hashedPassword = CreateHash(password, salt);
             return hashedPassword;
         }
+
+        internal static bool ComparePasswords(string password, string hashedPasswords)
+        {
+            byte[] hashBytes = Convert.FromBase64String(hashedPasswords);
+            byte[] salt = new byte[16];
+            Array.Copy(hashBytes, 0, salt, 0, 16);
+            var asdf2 = new Rfc2898DeriveBytes(password, salt, 21370);
+            byte[] hash = asdf2.GetBytes(20);
+            bool areTheSame = true;
+            for (int i = 0; i < 20; i++)
+            {
+                if (hashBytes[i + 16] != hash[i])
+                {
+                    areTheSame = false;
+                }
+            }
+
+            return areTheSame;
+        }
     }
 }
