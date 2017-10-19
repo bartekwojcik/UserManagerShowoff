@@ -50,11 +50,17 @@ namespace UserManager.IntegrationTests
             var result = _userManager.RegisterUser(_tempUser.Login, _tempUser.Password, _tempUser.PasswordConfirmation);
             var result2 = _userManager.RegisterUser(_tempUser.Login, _tempUser.Password, _tempUser.PasswordConfirmation);
             Assert.IsTrue(result.IsSuccess);
-            Assert.IsFalse(result.Errors.Any());           
+            Assert.IsFalse(result.Errors.Any());
             Assert.IsFalse(result2.IsSuccess);
             Assert.IsTrue(result2.Errors.Any());
         }
 
-        //todo testy gdy są błęde hasla
+        [TestMethod]
+        public void CanRegisterMismatchPassword_ShouldFailed()
+        {
+            var result = _userManager.RegisterUser("whatever@gmail.com", _tempUser.Password, _tempUser.PasswordConfirmation + "difference");
+            Assert.IsFalse(result.IsSuccess);
+            Assert.IsTrue(result.Errors.Any());
+        }
     }
 }
