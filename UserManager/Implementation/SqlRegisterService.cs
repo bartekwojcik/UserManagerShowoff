@@ -80,11 +80,19 @@ namespace UserManager.Implementation
                 {
                     cmd.Parameters.AddWithValue("@Login", login);
                     SqlDataReader reader = cmd.ExecuteReader();
-                    //todo find another way to check if there is some data
-                    if (reader.GetString(0) != null)
+
+                    while (reader.Read())
                     {
-                        return new ValidateResult(false, new List<string>() { $"User {login} exists" });
+                        string column = reader["Login"]?.ToString();
+                        if (!string.IsNullOrWhiteSpace(column))
+                        {
+                            return new ValidateResult(false, new List<string>() { $"User {login} exists" });
+                        }
                     }
+                    //if (reader.GetString(0) != null)
+                    //{
+                    //    return new ValidateResult(false, new List<string>() { $"User {login} exists" });
+                    //}
                 }
                 return new ValidateResult(true);
             }

@@ -15,14 +15,14 @@ namespace UserManager.IntegrationTests
     [TestClass]
     public class RegisterIntegrationTests
     {
-        static IUserManager _userManager;
-        static User _tempUser;
-        static readonly string _login = "john@smith.com";
-        static readonly string _password = "P@ssword";
-        static readonly string _passwordConf = "P@ssword";
+        IUserManager _userManager;
+        User _tempUser;
+        readonly string _login = "john@smith.com";
+        readonly string _password = "P@ssword";
+        readonly string _passwordConf = "P@ssword";
 
-        [ClassInitialize]
-        public static void Init_RegisterIntegrationTests(TestContext testContext)
+
+        public RegisterIntegrationTests()
         {
             var initializer = new BasicDatabaseInitializer(TestConfig.TestConnectionString);
             var registerService = new BasicRegisterService(TestConfig.TestConnectionString);
@@ -40,20 +40,19 @@ namespace UserManager.IntegrationTests
         {
 
             var result = _userManager.RegisterUser(_tempUser.Login, _tempUser.Password, _tempUser.PasswordConfirmation);
-            var debug = 5;
-
-            //todo clear users table after
-            //arrange, act, assert
+            Assert.IsTrue(result.IsSuccess);
+            Assert.IsFalse(result.Errors.Any());
         }
 
         [TestMethod]
         public void CanRegisterTwoUsersWithTheSameName_ShouldFail()
         {
             var result = _userManager.RegisterUser(_tempUser.Login, _tempUser.Password, _tempUser.PasswordConfirmation);
-            var debug = 5;
-
-            //todo clear users table after
-            //arrange, act, assert
+            var result2 = _userManager.RegisterUser(_tempUser.Login, _tempUser.Password, _tempUser.PasswordConfirmation);
+            Assert.IsTrue(result.IsSuccess);
+            Assert.IsFalse(result.Errors.Any());           
+            Assert.IsFalse(result2.IsSuccess);
+            Assert.IsTrue(result2.Errors.Any());
         }
 
         //todo testy gdy są błęde hasla
