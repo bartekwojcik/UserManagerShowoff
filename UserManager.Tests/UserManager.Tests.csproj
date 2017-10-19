@@ -59,9 +59,9 @@
   <ItemGroup>
     <Compile Include="MockClasses\User.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="ServicesTests\LoggableInitializerTests.cs" />
+    <Compile Include="UnitTests\LoggableInitializerTests.cs" />
     <Compile Include="IntegrationTests\RegisterIntegrationTests.cs" />
-    <Compile Include="ServicesTests\UserManagerTests.cs" />
+    <Compile Include="UnitTests\UserManagerTests.cs" />
     <Compile Include="TestConfig.cs" />
   </ItemGroup>
   <ItemGroup>

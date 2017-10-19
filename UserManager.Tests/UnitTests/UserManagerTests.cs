@@ -17,12 +17,12 @@ namespace UserManager.Tests.ServicesTests.UserManager
         [TestMethod]
         public void Initialize_InitializationFailed_ShouldReturnResultFalse()
         {
-            //Arange
+            //arrange
             Mock<IDatabaseInitializer> mockInitializer = new Mock<IDatabaseInitializer>();
             var failErrors = new List<string> { "Initialization failed because of reasons" };
             mockInitializer.Setup(x => x.Initialize()).Returns(new ActionResults.InitializationResult(false, failErrors));
 
-            IUserManager userManager = new ConcreteUserManager(null);
+            IUserManager userManager = new ConcreteUserManager(null,null);
 
             //Act
             var initResult = userManager.InitializeDatabase(mockInitializer.Object);
@@ -35,10 +35,10 @@ namespace UserManager.Tests.ServicesTests.UserManager
         [TestMethod]
         public void Initialize_InitializationSucceeded_ShouldReturnResulTrue()
         {
-            //Arange
+            //arrange
             Mock<IDatabaseInitializer> mockInitializer = new Mock<IDatabaseInitializer>();
             mockInitializer.Setup(x => x.Initialize()).Returns(new ActionResults.InitializationResult(true));
-            IUserManager userManager = new ConcreteUserManager(null);
+            IUserManager userManager = new ConcreteUserManager(null,null);
 
             //Act
             var initResult = userManager.InitializeDatabase(mockInitializer.Object);

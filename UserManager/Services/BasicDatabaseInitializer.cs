@@ -17,7 +17,7 @@ namespace UserManager.Services
         private readonly string _initScript;
         private readonly string _connectionString;
 
-      
+
         public BasicDatabaseInitializer()
         {
             _initScript = SqlHelper.FileToSql(DefaultConfig.InitScriptPath);
@@ -54,11 +54,6 @@ namespace UserManager.Services
                     con.Close();
                 }
             }
-        }
-
-        public string RegisterCommand()
-        {
-            throw new NotImplementedException();
         }
     }
 }

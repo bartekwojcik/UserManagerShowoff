@@ -28,6 +28,10 @@ namespace UserManager.Implementation
 
         public RegisterResult Register(string login, string password, string passwordConfirmation)
         {
+            if (string.IsNullOrWhiteSpace(login) || string.IsNullOrWhiteSpace(password) || string.IsNullOrWhiteSpace(passwordConfirmation))
+            {
+                return new RegisterResult(false, new List<string>() { "No value can be empty" });
+            }
             if (password != passwordConfirmation)
             {
                 return new RegisterResult(false, new List<string>() { "Passwords does not match" });
@@ -88,11 +92,7 @@ namespace UserManager.Implementation
                         {
                             return new ValidateResult(false, new List<string>() { $"User {login} exists" });
                         }
-                    }
-                    //if (reader.GetString(0) != null)
-                    //{
-                    //    return new ValidateResult(false, new List<string>() { $"User {login} exists" });
-                    //}
+                    }                   
                 }
                 return new ValidateResult(true);
             }

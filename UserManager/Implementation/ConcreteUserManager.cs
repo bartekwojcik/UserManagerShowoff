@@ -11,10 +11,12 @@ namespace UserManager.Implementation
     public class ConcreteUserManager : IUserManager
     {
         private readonly IRegisterService _registerService;
+        private readonly ILoginService _loginService;
 
-        public ConcreteUserManager(IRegisterService registerService)
+        public ConcreteUserManager(IRegisterService registerService, ILoginService loginService)
         {
             this._registerService = registerService;
+            this._loginService = loginService;
         }
 
         public InitializationResult InitializeDatabase(IDatabaseInitializer initializeService)
@@ -24,7 +26,7 @@ namespace UserManager.Implementation
 
         public LoginResult Login(string login, string password)
         {
-            throw new NotImplementedException();
+            return _loginService.Login(login, password);
         }
 
         public RegisterResult RegisterUser(string login, string password, string passwordConfirmation)

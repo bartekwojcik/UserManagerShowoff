@@ -17,16 +17,16 @@ namespace UserManager.IntegrationTests
     {
         IUserManager _userManager;
         User _tempUser;
-        readonly string _login = "john@smith.com";
-        readonly string _password = "P@ssword";
-        readonly string _passwordConf = "P@ssword";
+        const string _login = "john@smith.com";
+        const string _password = "P@ssword";
+        const string _passwordConf = "P@ssword";
 
 
         public RegisterIntegrationTests()
         {
             var initializer = new BasicDatabaseInitializer(TestConfig.TestConnectionString);
             var registerService = new BasicRegisterService(TestConfig.TestConnectionString);
-            _userManager = new ConcreteUserManager(registerService);
+            _userManager = new ConcreteUserManager(registerService, null);
             _userManager.InitializeDatabase(initializer);
             _tempUser = new User()
             {
@@ -36,12 +36,15 @@ namespace UserManager.IntegrationTests
             };
         }
         [TestMethod]
-        public void CanRegisterFirstUser_ShouldSucceeded()
+        public void CanRegisterDistinctUsers_ShouldSucceeded()
         {
 
             var result = _userManager.RegisterUser(_tempUser.Login, _tempUser.Password, _tempUser.PasswordConfirmation);
+            var result2 = _userManager.RegisterUser("another@guys.com", "qwerty", "qwerty");
             Assert.IsTrue(result.IsSuccess);
             Assert.IsFalse(result.Errors.Any());
+            Assert.IsTrue(result2.IsSuccess);
+            Assert.IsFalse(result2.Errors.Any());
         }
 
         [TestMethod]

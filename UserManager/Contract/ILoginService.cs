@@ -7,8 +7,8 @@ using UserManager.ActionResults;
 
 namespace UserManager.Contract
 {
-    public interface IDatabaseInitializer
+    public interface ILoginService
     {
-        InitializationResult Initialize();        
+        LoginResult Login(string login, string password);
     }
 }

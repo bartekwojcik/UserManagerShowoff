@@ -13,7 +13,7 @@ namespace UserManager.Tests.ServicesTests.DatabaseInitializer
         [TestMethod]
         public void Initialize_InitializationFailed_ShouldLoggedErrors()
         {
-            //Arange
+            //arrange
             Mock<BasicDatabaseInitializer> mockInitializer = new Mock<BasicDatabaseInitializer>();
             var failErrors = new List<string> { "Initialization failed because of reasons" };
             mockInitializer.Setup(x => x.Initialize()).Returns(new ActionResults.InitializationResult(false, failErrors));
@@ -29,7 +29,7 @@ namespace UserManager.Tests.ServicesTests.DatabaseInitializer
         [TestMethod]
         public void Initialize_InitializationSucceeded_ErrorsShouldBeClear()
         {
-            //Arange
+            //arrange
             Mock<BasicDatabaseInitializer> mockInitializer = new Mock<BasicDatabaseInitializer>();
             mockInitializer.Setup(x => x.Initialize()).Returns(new ActionResults.InitializationResult(true));
             LoggableDatabaseInitializer testedInstance = new LoggableDatabaseInitializer(mockInitializer.Object);
