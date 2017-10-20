@@ -8,16 +8,21 @@ using System.Threading.Tasks;
 using UserManager.ActionResults;
 using UserManager.Contract;
 using UserManager.Helpers;
+using UserManager.Misc;
 
 namespace UserManager.Implementation
 {
     public class BasicLoginService : ILoginService
     {
         private string _connectionString;
+        private readonly TimeSpan _tokenValidityTime;
+        private readonly string _saveTokenScript;
 
-        public BasicLoginService(string connectionString)
+        public BasicLoginService(string connectionString, TimeSpan tokenValidityTime)
         {
             this._connectionString = connectionString;
+            this._tokenValidityTime = tokenValidityTime;
+            this._saveTokenScript = SqlHelper.FileToSql(DefaultConfig.SaveTokenScript);
         }
         public LoginResult Login(string login, string password)
         {
@@ -41,35 +46,31 @@ namespace UserManager.Implementation
 
             return LogInUser(login);
 
-            //jak sie zgadza wszystko to zwróc token i jego expiration date, zapisz go też w bazie
+          
         }
 
         private LoginResult LogInUser(string login)
         {
+            var expirationTime = DateTime.UtcNow.Add(_tokenValidityTime);
+            string token = CryptoHelper.GenerateToken(expirationTime);
 
-            //todo repair method
             var con = new SqlConnection();
             con.ConnectionString = _connectionString;
             con.Open();
-            //todo switch to script from file
-            var getUserByLoginCommand = @"select * from [dbo].[Users] where Login = @Login";
             try
             {
-                using (SqlCommand cmd = new SqlCommand(getUserByLoginCommand, con))
+                using (SqlCommand cmd = new SqlCommand(_saveTokenScript, con))
                 {
+                    cmd.Parameters.AddWithValue("@Token", token);
+                    cmd.Parameters.AddWithValue("@TokenExpirationDate", expirationTime);
                     cmd.Parameters.AddWithValue("@Login", login);
-                    SqlDataReader reader = cmd.ExecuteReader();
-                    while (reader.Read())
-                    {
-                        string hasedPassword = reader["SaltedPassword"]?.ToString();
-                        return new LoginResult(true, hasedPassword);
-                    }
+                    var result = cmd.ExecuteNonQuery();
                 }
-                return new LoginResult(true, new List<string>() { "User does not exists" });
+                return new LoginResult(true, token, expirationTime);
             }
             catch (Exception e)
             {
-                var messages = e.FlatternMessages();
+                var messages = e.FlattenMessages();
                 return new LoginResult(false, messages);
             }
             finally
@@ -109,7 +110,7 @@ namespace UserManager.Implementation
             }
             catch (Exception e)
             {
-                var messages = e.FlatternMessages();
+                var messages = e.FlattenMessages();
                 return new ValidateUserResult(messages);
             }
             finally

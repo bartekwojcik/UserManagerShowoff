@@ -9,6 +9,7 @@ namespace UserManager.Helpers
 {
     internal static class CryptoHelper
     {
+        // resources: https://medium.com/@mehanix/lets-talk-security-salted-password-hashing-in-c-5460be5c3aae
         private static byte[] CreateSalt()
         {
             byte[] salt = new byte[16];
@@ -51,6 +52,15 @@ namespace UserManager.Helpers
             }
 
             return areTheSame;
+        }
+
+        internal static string GenerateToken(DateTime expirationTime)
+        {
+            //resources: https://stackoverflow.com/questions/14643735/how-to-generate-a-unique-token-which-expires-after-24-hours
+            byte[] time = BitConverter.GetBytes(expirationTime.ToBinary());
+            byte[] key = Guid.NewGuid().ToByteArray();
+            string token = Convert.ToBase64String(time.Concat(key).ToArray());
+            return token;
         }
     }
 }

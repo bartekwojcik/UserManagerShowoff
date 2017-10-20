@@ -44,7 +44,7 @@ namespace UserManager.Services
             }
             catch (Exception e)
             {
-                var messages = e.FlatternMessages();
+                var messages = e.FlattenMessages();
                 return new InitializationResult(false, messages);
             }
             finally

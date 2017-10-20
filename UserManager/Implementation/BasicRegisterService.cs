@@ -56,7 +56,7 @@ namespace UserManager.Implementation
             }
             catch (Exception e)
             {
-                var messages = e.FlatternMessages();
+                var messages = e.FlattenMessages();
                 return new RegisterResult(false, messages);
             }
             finally
@@ -107,7 +107,7 @@ namespace UserManager.Implementation
             }
             catch (Exception e)
             {
-                var messages = e.FlatternMessages();
+                var messages = e.FlattenMessages();
                 messages.Insert(0, "Error occurred!");
                 return new ValidateResult(false, messages);
             }

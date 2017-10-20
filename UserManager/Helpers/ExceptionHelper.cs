@@ -9,7 +9,7 @@ namespace UserManager.Helpers
 
     internal static class ExceptionHelper
     {
-        internal static List<string> FlatternMessages(this Exception e, List<string> flatteredMessages = null)
+        internal static List<string> FlattenMessages(this Exception e, List<string> flatteredMessages = null)
         {
             if (flatteredMessages == null)
             {
@@ -18,7 +18,7 @@ namespace UserManager.Helpers
             flatteredMessages.Add(e.Message);
             if (e.InnerException != null)
             {
-                return e.InnerException.FlatternMessages(flatteredMessages);
+                return e.InnerException.FlattenMessages(flatteredMessages);
             }
             else
             {

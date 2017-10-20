@@ -8,6 +8,8 @@ namespace UserManager.Misc
 {
     internal static class DefaultConfig
     {
+        internal static string SaveTokenScript => @"Scripts/SaveTokenScript.sql";
+
         internal static string DefaultConnectionString => @"Data Source=.\SQLEXPRESS;
                           AttachDbFilename=|DataDirectory|SampleDatabase.mdf;
                           Integrated Security=True;
