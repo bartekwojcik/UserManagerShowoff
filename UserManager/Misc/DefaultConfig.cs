@@ -19,5 +19,6 @@ namespace UserManager.Misc
         internal static string InitScriptPath => @"Scripts/InititDb.sql";
         internal static string RegisterScriptPath => @"Scripts/RegisterCommand.sql";
         internal static string GetUserByLoginScriptPath => @"Scripts/GetUserByLogin.sql";
+        internal static string TruncateUsersTable => @"Scripts/TruncateUserTableScript.sql";
     }
 }

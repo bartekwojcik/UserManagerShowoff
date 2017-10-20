@@ -9,6 +9,7 @@ using UserManager.Implementation;
 using UserManager.Services;
 using UserManager.Tests;
 using UserManager.Tests.MockClasses;
+using UserManager.Tests.TempClasses;
 
 namespace UserManager.IntegrationTests
 {
@@ -32,8 +33,13 @@ namespace UserManager.IntegrationTests
                 PasswordConfirmation = _passwordConf
             };
         }
+        [TestCleanup]
+        public void DeleteRegisteredUsers()
+        {
+            DbHelper.NukeAllTestUsers(TestConfig.TestConnectionString, DbHelper.TruncateCommandScript);
+        }
         [TestMethod]
-        public void RegisterService_IntegrationTests_CanRegisterDistinctUsers_ShouldSucceeded()
+        public void IntegrationTests_RegisterService_CanRegisterDistinctUsers_ShouldSucceeded()
         {
             var result = _registerService.Register(_tempUser.Login, _tempUser.Password, _tempUser.PasswordConfirmation);
             var result2 = _registerService.Register("another@guys.com", "qwerty", "qwerty");
@@ -44,7 +50,7 @@ namespace UserManager.IntegrationTests
         }
 
         [TestMethod]
-        public void RegisterService_IntegrationTests_CanRegisterTwoUsersWithTheSameName_ShouldFail()
+        public void IntegrationTests_RegisterService_CanRegisterTwoUsersWithTheSameName_ShouldFail()
         {
             var result = _registerService.Register(_tempUser.Login, _tempUser.Password, _tempUser.PasswordConfirmation);
             var result2 = _registerService.Register(_tempUser.Login, _tempUser.Password, _tempUser.PasswordConfirmation);
@@ -55,7 +61,7 @@ namespace UserManager.IntegrationTests
         }
 
         [TestMethod]
-        public void RegisterService_IntegrationTests_CanRegisterMismatchPassword_ShouldFailed()
+        public void IntegrationTests_RegisterService_CanRegisterMismatchPassword_ShouldFailed()
         {
             var result = _registerService.Register("whatever@gmail.com", _tempUser.Password, _tempUser.PasswordConfirmation + "difference");
             Assert.IsFalse(result.IsSuccess);

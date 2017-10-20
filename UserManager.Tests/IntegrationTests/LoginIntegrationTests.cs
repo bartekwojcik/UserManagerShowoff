@@ -57,7 +57,7 @@ namespace UserManager.Tests.IntegrationTests
         }
 
         [TestMethod]
-        public void Login_IntegrationTests_CanLoginMultipleUsers_ShouldSucceed()
+        public void IntegrationTests_LoginService_CanLoginMultipleUsers_ShouldSucceed()
         {
             //arrange    
             foreach (var user in registeredUsers)
@@ -85,7 +85,7 @@ namespace UserManager.Tests.IntegrationTests
         }
 
         [TestMethod]
-        public void Login_IntegrationTests_CanLoginUnregistredUsers_ShouldFail()
+        public void IntegrationTests_LoginService_CanLoginUnregistredUsers_ShouldFail()
         {
             var randomLogin = Guid.NewGuid().ToString("N");
             var randomPasswords = Guid.NewGuid().ToString("N");
@@ -93,6 +93,23 @@ namespace UserManager.Tests.IntegrationTests
             Assert.IsFalse(result.IsSuccess);
             Assert.IsNull(result.Token);
             Assert.IsFalse(result.Errors.Any());
+        }
+
+        [TestMethod]
+        public void IntegrationTests_LoginService_CanLoginMismatchedPassword_ShouldSucceed()
+        {
+            //arrange                
+            var registerResult = _userManager.RegisterUser(_login1, _password1, _password1);
+            //act
+            var mismatchedPassword = _password1 + "failure";
+            var loginResult = _userManager.Login(_login1, mismatchedPassword);
+
+            //assert
+            Assert.IsFalse(loginResult.IsSuccess);
+            Assert.IsNull(loginResult.Token);
+            Assert.IsTrue(registerResult.IsSuccess);
+            Assert.IsFalse(registerResult.Errors.Any());
+
         }
     }
 }

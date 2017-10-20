@@ -84,6 +84,10 @@ namespace UserManager.Implementation
 
         private ValidateResult ValidateUser(string login)
         {
+            if (string.IsNullOrWhiteSpace(login))
+            {
+                return new ValidateResult(false, new List<string>() { "Login can not by empty" });
+            }
             var con = new SqlConnection();
             con.ConnectionString = _connectionString;
             con.Open();
@@ -97,7 +101,7 @@ namespace UserManager.Implementation
                     while (reader.Read())
                     {
                         string column = reader["Login"]?.ToString();
-                        if (!string.IsNullOrWhiteSpace(column))
+                        if (!string.IsNullOrWhiteSpace(column) && column.ToLower() == login.ToLower())
                         {
                             return new ValidateResult(false, new List<string>() { $"User {login} exists" });
                         }
