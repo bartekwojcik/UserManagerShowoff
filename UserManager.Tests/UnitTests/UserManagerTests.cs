@@ -114,7 +114,7 @@ namespace UserManager.Tests.ServicesTests.UserManager
             //arrange
             var login = "john@smith.com";
             var password = "P@ssw0rd";
-            var errors = new List<string> { $"Incorrect user or password" };
+            var errors = new List<string> { "Incorrect user or password" };
             Mock<ILoginService> mock = new Mock<ILoginService>();
             mock.Setup(x => x.Login(login, password)).Returns(new LoginResult(false, errors));            
             IUserManager userManager = new ConcreteUserManager(null, mock.Object);

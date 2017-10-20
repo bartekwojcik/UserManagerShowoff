@@ -33,7 +33,7 @@ namespace UserManager.IntegrationTests
                 PasswordConfirmation = _passwordConf
             };
         }
-        [TestCleanup]
+        [TestInitialize]
         public void DeleteRegisteredUsers()
         {
             DbHelper.NukeAllTestUsers(TestConfig.TestConnectionString, DbHelper.TruncateCommandScript);

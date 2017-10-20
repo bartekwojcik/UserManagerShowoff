@@ -77,7 +77,7 @@ namespace UserManager.Implementation
             }
             if (password != passwordConfirmation)
             {
-                return new ValidateResult(false, new List<string>() { "Passwords does not match" });
+                return new ValidateResult(false, new List<string>() { "Passwords do not match" });
             }
             return new ValidateResult(true);
         }

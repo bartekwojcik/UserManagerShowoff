@@ -92,7 +92,7 @@ namespace UserManager.Tests.IntegrationTests
             var result = _userManager.Login(randomLogin, randomPasswords);
             Assert.IsFalse(result.IsSuccess);
             Assert.IsNull(result.Token);
-            Assert.IsFalse(result.Errors.Any());
+            Assert.IsTrue(result.Errors.Any());
         }
 
         [TestMethod]

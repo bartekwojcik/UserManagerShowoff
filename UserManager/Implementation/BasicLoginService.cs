@@ -17,36 +17,33 @@ namespace UserManager.Implementation
         private string _connectionString;
         private readonly TimeSpan _tokenValidityTime;
         private readonly string _saveTokenScript;
+        private readonly string _getUserByLoginScript;
 
         public BasicLoginService(string connectionString, TimeSpan tokenValidityTime)
         {
             this._connectionString = connectionString;
             this._tokenValidityTime = tokenValidityTime;
             this._saveTokenScript = SqlHelper.FileToSql(DefaultConfig.SaveTokenScript);
+            this._getUserByLoginScript = SqlHelper.FileToSql(DefaultConfig.GetUserByLoginScriptPath);
         }
         public virtual LoginResult Login(string login, string password)
         {
             if (string.IsNullOrWhiteSpace(login) || string.IsNullOrWhiteSpace(password))
             {
                 return new LoginResult(false, new List<string> { "Password or login is empty" });
-            }
-            //sprawdz czy jest taki juser
+            }           
             ValidateUserResult userResult = CheckIfUserExists(login);
             if (!userResult.IsSuccess || string.IsNullOrWhiteSpace(userResult.HashedPasswordFromDb))
             {
                 return new LoginResult(userResult.IsSuccess, userResult.Errors);
-            }
-            //sprawdz czy hash hasla sie zgadza
+            }            
 
             bool isPasswordOk = CheckPasswords(password, userResult.HashedPasswordFromDb);
             if (!isPasswordOk)
             {
                 return new LoginResult(false, new List<string> { "Login or password incorrect" });
             }
-
-            return LogInUser(login);
-
-          
+            return LogInUser(login);          
         }
 
         private LoginResult LogInUser(string login)
@@ -91,12 +88,10 @@ namespace UserManager.Implementation
         {
             var con = new SqlConnection();
             con.ConnectionString = _connectionString;
-            con.Open();
-            //todo switch to script from file
-            var getUserByLoginCommand = @"select * from [dbo].[Users] where Login = @Login";
+            con.Open();                       
             try
             {
-                using (SqlCommand cmd = new SqlCommand(getUserByLoginCommand, con))
+                using (SqlCommand cmd = new SqlCommand(_getUserByLoginScript, con))
                 {
                     cmd.Parameters.AddWithValue("@Login", login);
                     SqlDataReader reader = cmd.ExecuteReader();
