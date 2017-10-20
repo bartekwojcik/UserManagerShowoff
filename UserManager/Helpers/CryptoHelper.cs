@@ -22,7 +22,7 @@ namespace UserManager.Helpers
             var pbkdf2 = new Rfc2898DeriveBytes(password, salt, 21370);
             byte[] hash = pbkdf2.GetBytes(20);
             byte[] hashBytes = new byte[36];
-            Array.Copy(salt, 0, hashBytes, 0, 16);
+            Array.Copy(salt, 0, hashBytes, 0, 16); //todo concat
             Array.Copy(hash, 0, hashBytes, 16, 20);
             string savedPasswordHash = Convert.ToBase64String(hashBytes);
             return savedPasswordHash;
@@ -39,7 +39,7 @@ namespace UserManager.Helpers
         {
             byte[] hashBytes = Convert.FromBase64String(hashedPasswords);
             byte[] salt = new byte[16];
-            Array.Copy(hashBytes, 0, salt, 0, 16);
+            Array.Copy(hashBytes, 0, salt, 0, 16); //todo concat
             var asdf2 = new Rfc2898DeriveBytes(password, salt, 21370);
             byte[] hash = asdf2.GetBytes(20);
             bool areTheSame = true;
