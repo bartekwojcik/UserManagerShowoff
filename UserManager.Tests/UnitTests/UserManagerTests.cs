@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 using UserManager.Services;
 using UserManager.Implementation;
 using UserManager.Contract;
+using UserManager.ActionResults;
 
 namespace UserManager.Tests.ServicesTests.UserManager
 {
@@ -46,6 +47,43 @@ namespace UserManager.Tests.ServicesTests.UserManager
             //Assert
             Assert.IsFalse(initResult.Errors.Any());
             Assert.IsTrue(initResult.IsSuccess);
+        }
+
+        [TestMethod]
+        public void UserManager_Register_RegisterNewUser_ShouldSucceed()
+        {
+            //arrange
+            var login = "john@smith.com";
+            var password = "P@ssw0rd";
+            Mock<IRegisterService> mock = new Mock<IRegisterService>();
+            mock.Setup(x => x.Register(login,password, password)).Returns(new RegisterResult(true));
+            IUserManager userManager = new ConcreteUserManager(mock.Object, null);
+
+            //Act
+            var initResult = userManager.RegisterUser(login,password,password);
+
+            //Assert
+            Assert.IsFalse(initResult.Errors.Any());
+            Assert.IsTrue(initResult.IsSuccess);
+        }
+
+        [TestMethod]
+        public void UserManager_Register_RegisterExistingUser_ShouldFail()
+        {
+            //arrange
+            var login = "john@smith.com";
+            var password = "P@ssw0rd";
+            var errors = new List<string> { $"User {login} already exists" };
+            Mock<IRegisterService> mock = new Mock<IRegisterService>();
+            mock.Setup(x => x.Register(login, password, password)).Returns(new RegisterResult(false,errors));
+            IUserManager userManager = new ConcreteUserManager(mock.Object, null);
+
+            //Act
+            var initResult = userManager.RegisterUser(login, password, password);
+
+            //Assert
+            Assert.IsTrue(initResult.Errors.Any());
+            Assert.IsFalse(initResult.IsSuccess);
         }
     }
 }

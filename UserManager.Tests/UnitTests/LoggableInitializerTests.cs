@@ -40,5 +40,7 @@ namespace UserManager.Tests.ServicesTests.DatabaseInitializer
             //Assert
             Assert.IsFalse(testedInstance.LoggedErrors.Any());
         }
+
+
     }
 }

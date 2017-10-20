@@ -26,7 +26,6 @@ namespace UserManager.Tests.IntegrationTests
         const string _password3 = "P@ssword";
 
         IList<User> registeredUsers = new List<User>();
-
         public LoginIntegrationTests()
         {
             var initializer = new BasicDatabaseInitializer(TestConfig.TestConnectionString);
@@ -55,7 +54,7 @@ namespace UserManager.Tests.IntegrationTests
             registeredUsers.Add(_user1);
             registeredUsers.Add(_user2);
             registeredUsers.Add(_user3);
-        }       
+        }
 
         [TestMethod]
         public void Login_IntegrationTests_CanLoginMultipleUsers_ShouldSucceed()
@@ -83,6 +82,17 @@ namespace UserManager.Tests.IntegrationTests
                 Assert.IsNotNull(result.Token);
                 Assert.IsTrue(result.TokenExpiratioDate > timeOfLogin);
             }
+        }
+
+        [TestMethod]
+        public void Login_IntegrationTests_CanLoginUnregistredUsers_ShouldFail()
+        {
+            var randomLogin = Guid.NewGuid().ToString("N");
+            var randomPasswords = Guid.NewGuid().ToString("N");
+            var result = _userManager.Login(randomLogin, randomPasswords);
+            Assert.IsFalse(result.IsSuccess);
+            Assert.IsNull(result.Token);
+            Assert.IsFalse(result.Errors.Any());
         }
     }
 }

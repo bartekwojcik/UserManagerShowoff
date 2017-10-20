@@ -15,19 +15,16 @@ namespace UserManager.IntegrationTests
     [TestClass]
     public class RegisterIntegrationTests
     {
-        IUserManager _userManager;
+        IRegisterService _registerService;
         User _tempUser;
         const string _login = "john@smith.com";
         const string _password = "P@ssword";
         const string _passwordConf = "P@ssword";
 
-
         public RegisterIntegrationTests()
         {
             var initializer = new BasicDatabaseInitializer(TestConfig.TestConnectionString);
-            var registerService = new BasicRegisterService(TestConfig.TestConnectionString);
-            _userManager = new ConcreteUserManager(registerService, null);
-            _userManager.InitializeDatabase(initializer);
+            _registerService = new BasicRegisterService(TestConfig.TestConnectionString);              
             _tempUser = new User()
             {
                 Login = _login,
@@ -36,11 +33,10 @@ namespace UserManager.IntegrationTests
             };
         }
         [TestMethod]
-        public void UserManager_IntegrationTests_CanRegisterDistinctUsers_ShouldSucceeded()
+        public void RegisterService_IntegrationTests_CanRegisterDistinctUsers_ShouldSucceeded()
         {
-
-            var result = _userManager.RegisterUser(_tempUser.Login, _tempUser.Password, _tempUser.PasswordConfirmation);
-            var result2 = _userManager.RegisterUser("another@guys.com", "qwerty", "qwerty");
+            var result = _registerService.Register(_tempUser.Login, _tempUser.Password, _tempUser.PasswordConfirmation);
+            var result2 = _registerService.Register("another@guys.com", "qwerty", "qwerty");
             Assert.IsTrue(result.IsSuccess);
             Assert.IsFalse(result.Errors.Any());
             Assert.IsTrue(result2.IsSuccess);
@@ -48,10 +44,10 @@ namespace UserManager.IntegrationTests
         }
 
         [TestMethod]
-        public void UserManager_IntegrationTests_CanRegisterTwoUsersWithTheSameName_ShouldFail()
+        public void RegisterService_IntegrationTests_CanRegisterTwoUsersWithTheSameName_ShouldFail()
         {
-            var result = _userManager.RegisterUser(_tempUser.Login, _tempUser.Password, _tempUser.PasswordConfirmation);
-            var result2 = _userManager.RegisterUser(_tempUser.Login, _tempUser.Password, _tempUser.PasswordConfirmation);
+            var result = _registerService.Register(_tempUser.Login, _tempUser.Password, _tempUser.PasswordConfirmation);
+            var result2 = _registerService.Register(_tempUser.Login, _tempUser.Password, _tempUser.PasswordConfirmation);
             Assert.IsTrue(result.IsSuccess);
             Assert.IsFalse(result.Errors.Any());
             Assert.IsFalse(result2.IsSuccess);
@@ -59,9 +55,9 @@ namespace UserManager.IntegrationTests
         }
 
         [TestMethod]
-        public void UserManager_IntegrationTests_CanRegisterMismatchPassword_ShouldFailed()
+        public void RegisterService_IntegrationTests_CanRegisterMismatchPassword_ShouldFailed()
         {
-            var result = _userManager.RegisterUser("whatever@gmail.com", _tempUser.Password, _tempUser.PasswordConfirmation + "difference");
+            var result = _registerService.Register("whatever@gmail.com", _tempUser.Password, _tempUser.PasswordConfirmation + "difference");
             Assert.IsFalse(result.IsSuccess);
             Assert.IsTrue(result.Errors.Any());
         }

@@ -26,7 +26,7 @@ namespace UserManager.Implementation
             _getUserByLoginCommand = SqlHelper.FileToSql(DefaultConfig.GetUserByLoginScriptPath);
         }
 
-        public RegisterResult Register(string login, string password, string passwordConfirmation)
+        public virtual RegisterResult Register(string login, string password, string passwordConfirmation)
         {
             var validateInputResult = ValidateInput(login, password, passwordConfirmation);
             if (!validateInputResult.IsSuccess)
