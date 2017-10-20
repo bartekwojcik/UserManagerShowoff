@@ -11,7 +11,7 @@ namespace UserManager.Tests.ServicesTests.DatabaseInitializer
     public class LoggableInitializerTests
     {
         [TestMethod]
-        public void Initialize_InitializationFailed_ShouldLoggedErrors()
+        public void LoggableInitializer_Initialize_InitializationFailed_ShouldLoggedErrors()
         {
             //arrange
             Mock<BasicDatabaseInitializer> mockInitializer = new Mock<BasicDatabaseInitializer>();
@@ -27,7 +27,7 @@ namespace UserManager.Tests.ServicesTests.DatabaseInitializer
         }
 
         [TestMethod]
-        public void Initialize_InitializationSucceeded_ErrorsShouldBeClear()
+        public void LoggableInitializer_Initialize_InitializationSucceeded_ErrorsShouldBeClear()
         {
             //arrange
             Mock<BasicDatabaseInitializer> mockInitializer = new Mock<BasicDatabaseInitializer>();

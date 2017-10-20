@@ -15,7 +15,7 @@ namespace UserManager.Tests.ServicesTests.UserManager
     public class UserManagerTests
     {
         [TestMethod]
-        public void Initialize_InitializationFailed_ShouldReturnResultFalse()
+        public void UserManager_Initialize_InitializationFailed_ShouldReturnResultFalse()
         {
             //arrange
             Mock<IDatabaseInitializer> mockInitializer = new Mock<IDatabaseInitializer>();
@@ -33,7 +33,7 @@ namespace UserManager.Tests.ServicesTests.UserManager
         }
 
         [TestMethod]
-        public void Initialize_InitializationSucceeded_ShouldReturnResulTrue()
+        public void UserManager_Initialize_InitializationSucceeded_ShouldReturnResulTrue()
         {
             //arrange
             Mock<IDatabaseInitializer> mockInitializer = new Mock<IDatabaseInitializer>();

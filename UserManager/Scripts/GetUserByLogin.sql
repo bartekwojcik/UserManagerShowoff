@@ -1,2 +1,6 @@
-﻿SELECT * FROM [dbo].[Users]
-WHERE Login = @Login
+﻿SELECT
+Id, Login, SaltedPassword, Token, TokenExpirationDate
+FROM
+[dbo].[Users]
+WHERE 
+Login = @Login

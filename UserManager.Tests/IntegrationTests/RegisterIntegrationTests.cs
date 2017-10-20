@@ -36,7 +36,7 @@ namespace UserManager.IntegrationTests
             };
         }
         [TestMethod]
-        public void CanRegisterDistinctUsers_ShouldSucceeded()
+        public void UserManager_IntegrationTests_CanRegisterDistinctUsers_ShouldSucceeded()
         {
 
             var result = _userManager.RegisterUser(_tempUser.Login, _tempUser.Password, _tempUser.PasswordConfirmation);
@@ -48,7 +48,7 @@ namespace UserManager.IntegrationTests
         }
 
         [TestMethod]
-        public void CanRegisterTwoUsersWithTheSameName_ShouldFail()
+        public void UserManager_IntegrationTests_CanRegisterTwoUsersWithTheSameName_ShouldFail()
         {
             var result = _userManager.RegisterUser(_tempUser.Login, _tempUser.Password, _tempUser.PasswordConfirmation);
             var result2 = _userManager.RegisterUser(_tempUser.Login, _tempUser.Password, _tempUser.PasswordConfirmation);
@@ -59,7 +59,7 @@ namespace UserManager.IntegrationTests
         }
 
         [TestMethod]
-        public void CanRegisterMismatchPassword_ShouldFailed()
+        public void UserManager_IntegrationTests_CanRegisterMismatchPassword_ShouldFailed()
         {
             var result = _userManager.RegisterUser("whatever@gmail.com", _tempUser.Password, _tempUser.PasswordConfirmation + "difference");
             Assert.IsFalse(result.IsSuccess);
