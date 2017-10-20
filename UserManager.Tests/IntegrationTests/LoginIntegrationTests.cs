@@ -8,6 +8,8 @@ using UserManager.ActionResults;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using Castle.Windsor;
+using Castle.MicroKernel.Registration;
 
 namespace UserManager.Tests.IntegrationTests
 {
@@ -15,6 +17,7 @@ namespace UserManager.Tests.IntegrationTests
     public class LoginIntegrationTests
     {
         IUserManager _userManager;
+        private WindsorContainer Container;
         User _user1;
         User _user2;
         User _user3;
@@ -28,10 +31,23 @@ namespace UserManager.Tests.IntegrationTests
         IList<User> registeredUsers = new List<User>();
         public LoginIntegrationTests()
         {
-            var initializer = new BasicDatabaseInitializer(TestConfig.TestConnectionString);
-            var loginservice = new BasicLoginService(TestConfig.TestConnectionString, new TimeSpan(1, 0, 0, 0));
-            var registerService = new BasicRegisterService(TestConfig.TestConnectionString);
-            _userManager = new ConcreteUserManager(registerService, loginservice);
+            
+            Container = new WindsorContainer();
+            Container.Register(Component.For<IDatabaseInitializer>().ImplementedBy<BasicDatabaseInitializer>().LifestyleTransient()
+                 .DependsOn(Dependency.OnValue("connectionString", TestConfig.TestConnectionString)));
+            Container.Register(Component.For<ILoginService>().ImplementedBy<BasicLoginService>().LifestyleTransient()
+                 .DependsOn(Dependency.OnValue("connectionString", TestConfig.TestConnectionString),
+                 Dependency.OnValue("tokenValidityTime", new TimeSpan(1, 0, 0, 0))));
+            Container.Register(Component.For<IRegisterService>().ImplementedBy<BasicRegisterService>().LifestyleTransient()
+                .DependsOn(Dependency.OnValue("connectionString", TestConfig.TestConnectionString)));
+            Container.Register(Component.For<IUserManager>().ImplementedBy<ConcreteUserManager>().LifestyleTransient());
+
+            // I realise this is more like Service Locator anti-pattern, but as I mentioned before
+            // here I would not use contaniner at the first place
+
+            var initializer = Container.Resolve<IDatabaseInitializer>();
+            _userManager = Container.Resolve<IUserManager>();
+
             _userManager.InitializeDatabase(initializer);
             _user1 = new User()
             {
@@ -76,12 +92,13 @@ namespace UserManager.Tests.IntegrationTests
 
             //assert
             Assert.IsTrue(results.Any());
-            foreach (var result in results)
+
+            results.ForEach(result =>
             {
                 Assert.IsTrue(result.IsSuccess);
                 Assert.IsNotNull(result.Token);
                 Assert.IsTrue(result.TokenExpiratioDate > timeOfLogin);
-            }
+            });
         }
 
         [TestMethod]
