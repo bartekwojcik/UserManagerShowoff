@@ -24,7 +24,7 @@ namespace UserManager.Implementation
             this._tokenValidityTime = tokenValidityTime;
             this._saveTokenScript = SqlHelper.FileToSql(DefaultConfig.SaveTokenScript);
         }
-        public LoginResult Login(string login, string password)
+        public virtual LoginResult Login(string login, string password)
         {
             if (string.IsNullOrWhiteSpace(login) || string.IsNullOrWhiteSpace(password))
             {

@@ -16,7 +16,7 @@ namespace UserManager.ActionResults
             TokenExpiratioDate = tokenExpirationTime;
         }
 
-        public LoginResult(bool isSuccess, IEnumerable<string> errors = null) : this(isSuccess, null, DateTime.MinValue)
+        public LoginResult(bool isSuccess, IEnumerable<string> errors = null) : this(isSuccess, null, DateTime.MinValue,errors)
         {
         }
 
