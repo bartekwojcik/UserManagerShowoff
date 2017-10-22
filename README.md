@@ -3,7 +3,7 @@
 
 # Clarifications
 - Instead of using ORM such as Entity Framework or nHibernate I decided to use plain SQL commands because I find it more important to show to you that I am familar with it.
-- I also decided to use Castle Windosor in integration tests just to show that I am capable of using this tool. However I would not do so in production. See for instance: https://stackoverflow.com/questions/32594803/using-di-container-in-unit-tests
+- I also decided to use Castle Windsor in integration tests just to show that I am capable of using this tool. However I would not do so in production. See for instance: https://stackoverflow.com/questions/32594803/using-di-container-in-unit-tests
 
 # Resources used for cryptographic part of code:
 - https://medium.com/@mehanix/lets-talk-security-salted-password-hashing-in-c-5460be5c3aae
